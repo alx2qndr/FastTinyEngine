@@ -1,0 +1,14 @@
+# --- Build directories ---
+bin/
+build/
+build-*/
+cmake-build-*/
+out/
+
+# --- IDE directories ---
+.idea/
+.vs/
+.vscode/
+
+# --- Compiled shaders ---
+*.spv
