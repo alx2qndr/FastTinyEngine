@@ -9,25 +9,47 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/bin")
 
 add_subdirectory("${CMAKE_SOURCE_DIR}/external")
 
-add_executable(${PROJECT_NAME} 
-    "${CMAKE_SOURCE_DIR}/src/main.cpp"   
-    "${CMAKE_SOURCE_DIR}/src/first_app.cpp"
-    "${CMAKE_SOURCE_DIR}/src/systems/simple_render_system.cpp"
-    "${CMAKE_SOURCE_DIR}/src/window.cpp"
-    "${CMAKE_SOURCE_DIR}/src/swap_chain.cpp"
-    "${CMAKE_SOURCE_DIR}/src/renderer.cpp"
-    "${CMAKE_SOURCE_DIR}/src/pipeline.cpp"
-    "${CMAKE_SOURCE_DIR}/src/model.cpp"
-    "${CMAKE_SOURCE_DIR}/src/game_object.cpp"
-    "${CMAKE_SOURCE_DIR}/src/descriptors.cpp"
-    "${CMAKE_SOURCE_DIR}/src/camera.cpp"
-    "${CMAKE_SOURCE_DIR}/src/buffer.cpp"
-    "${CMAKE_SOURCE_DIR}/src/device.cpp"
-    "${CMAKE_SOURCE_DIR}/src/device.cpp"
-    "${CMAKE_SOURCE_DIR}/src/texture.cpp"
+set(SOURCES
+    src/main.cpp   
+    src/first_app.cpp
+    src/systems/simple_render_system.cpp
+    src/window.cpp
+    src/swap_chain.cpp
+    src/renderer.cpp
+    src/pipeline.cpp
+    src/model.cpp
+    src/game_object.cpp
+    src/descriptors.cpp
+    src/camera.cpp
+    src/buffer.cpp
+    src/device.cpp
+    src/texture.cpp
+)
 
+add_executable(${PROJECT_NAME} ${SOURCES})
+
+target_include_directories(${PROJECT_NAME} PUBLIC
+    $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include>
 )
 
 target_link_libraries(${PROJECT_NAME} PUBLIC external::external)
 
-target_include_directories(${PROJECT_NAME} PUBLIC "${CMAKE_SOURCE_DIR}/include")
+if(WIN32)
+    set(COPY_DEPENDENCIES SDL3::SDL3-shared)
+
+    foreach(dep ${COPY_DEPENDENCIES})
+        if(TARGET ${dep})
+            list(APPEND COPY_TARGETS $<TARGET_FILE:${dep}>)
+        endif()
+    endforeach()
+
+    if(COPY_TARGETS)
+        add_custom_command(
+            TARGET ${PROJECT_NAME} POST_BUILD
+            COMMAND "${CMAKE_COMMAND}" -E copy_if_different
+                ${COPY_TARGETS}
+                $<TARGET_FILE_DIR:${PROJECT_NAME}>
+            VERBATIM
+        )
+    endif()
+endif()

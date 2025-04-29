@@ -146,7 +146,7 @@ void Renderer::beginSwapchainRenderPass(VkCommandBuffer commandBuffer)
     renderPassInfo.renderArea.extent = swapchain->getSwapchainExtent();
 
     std::array<VkClearValue, 2> clearValues{};
-    clearValues[0].color = {srgbToLinear(0.1f), srgbToLinear(0.2f), srgbToLinear(0.3), 1.0f};
+    clearValues[0].color = {0.0f, 0.0f, 0.0f, 1.0f};
     clearValues[1].depthStencil = {1.0f, 0};
     renderPassInfo.clearValueCount = static_cast<uint32_t>(clearValues.size());
     renderPassInfo.pClearValues = clearValues.data();
